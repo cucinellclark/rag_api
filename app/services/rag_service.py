@@ -386,6 +386,12 @@ class RAGService:
         all_documents.sort(key=lambda x: x['score'], reverse=True)
         
         print(f"[RAG Service] Search complete: {len(all_documents)} total document(s) found")
+        for i, doc in enumerate(all_documents, start=1):
+            content = str(doc.get("content", "") or "")
+            preview = content[:180].replace("\n", " ")
+            if len(content) > 180:
+                preview += "..."
+            print(f"[RAG Service] doc {i}: {preview}")
         
         return {
             'documents': all_documents,

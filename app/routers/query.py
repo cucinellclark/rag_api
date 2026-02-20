@@ -30,6 +30,7 @@ async def query_database(database_name: str, request: QueryRequest) -> QueryResp
         QueryResponse with retrieved documents and query embedding.
     """
     try:
+        print(f"[RAG API] checkpoint: request received for database='{database_name}'")
         config = get_config()
         rag_service = get_rag_service()
         top_k = request.top_k if request.top_k is not None else config.retrieval.default_top_k
@@ -38,6 +39,9 @@ async def query_database(database_name: str, request: QueryRequest) -> QueryResp
             if request.score_threshold is not None
             else config.retrieval.default_score_threshold
         )
+        print(
+            f"[RAG API] checkpoint: starting search (top_k={top_k}, score_threshold={score_threshold})"
+        )
         
         result = rag_service.search(
             db_name=database_name,
@@ -45,6 +49,20 @@ async def query_database(database_name: str, request: QueryRequest) -> QueryResp
             top_k=top_k,
             score_threshold=score_threshold,
         )
+        print("[RAG API] checkpoint: search finished")
+
+        # Console logging of returned documents for operational visibility.
+        returned_documents = result.get("documents", [])
+        print(
+            f"[RAG API] Query '{request.query[:80]}{'...' if len(request.query) > 80 else ''}' "
+            f"returned {len(returned_documents)} document(s) from '{database_name}'"
+        )
+        for i, doc in enumerate(returned_documents, start=1):
+            content = str(doc.get("content", "") or "")
+            preview = content[:180].replace("\n", " ")
+            if len(content) > 180:
+                preview += "..."
+            print(f"[RAG API] doc {i}: {preview}")
         
         documents = [
             DocumentResult(
@@ -54,6 +72,7 @@ async def query_database(database_name: str, request: QueryRequest) -> QueryResp
             )
             for doc in result['documents']
         ]
+        print(f"[RAG API] checkpoint: response ready (documents={len(documents)})")
         
         return QueryResponse(
             query=request.query,
