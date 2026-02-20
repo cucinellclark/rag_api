@@ -4,3 +4,5 @@ logs
 ecosystem.config.js
 config.json
 *pyc
+__pycache__/
+*.pyc
