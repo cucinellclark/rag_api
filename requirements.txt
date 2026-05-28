@@ -1,0 +1,8 @@
+fastapi[standard]>=0.104.0
+pydantic>=2.5.0
+pymongo>=4.6.0
+requests>=2.31.0
+numpy>=1.24.0,<2
+faiss-cpu>=1.7.4,<1.8
+datasets>=2.14.0
+pyarrow>=14.0.0

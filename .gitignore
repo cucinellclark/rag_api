@@ -6,3 +6,4 @@ config.json
 *pyc
 __pycache__/
 *.pyc
+rag_env
